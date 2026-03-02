@@ -19,3 +19,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/LakviruPerera/F2Adonis2
+BugReports: https://github.com/LakviruPerera/F2Adonis2/issues
