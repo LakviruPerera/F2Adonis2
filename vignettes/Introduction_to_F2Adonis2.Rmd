@@ -1,0 +1,148 @@
+---
+title: "Introduction_to_F2Adonis2"
+author: "Lakviru Perera"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction_to_F2Adonis2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+
+  collapse = TRUE,
+
+  comment = "#>",
+
+  fig.width = 7,
+
+  fig.height = 5
+
+)
+```
+
+
+```{r setup}
+library(F2Adonis2)
+```
+
+
+#Summary#
+
+F2Adonis2 is an R package designed for robust multivariate analysis of variance using distance matrices. It implements the $F_2$ statistic as proposed by Anderson et al. (2017) to provide a solution to the multivariate Behrens-Fisher problem (BFP). The BFP arises when researchers need to test the null hypothesis of equality of mean vectors (centroids) across two or more populations while their dispersion matrices (variances) differ.
+
+#Statement of Need#
+
+In multivariate ecological and biological studies, researchers often rely on distance-based permutational methods like PERMANOVA (the $F_1$ statistic) to detect differences among groups. However, standard PERMANOVA is strictly valid only when group dispersions are homogeneous. As demonstrated in Anderson et al. (2017), the $F_1$ test is not robust to heterogeneity of dispersions in the space of the chosen dissimilarity measure, particularly for unbalanced designs:
+
+Inflated Type I Error: When smaller groups have larger spreads, the $F_1$ test becomes too liberal, falsely identifying differences in centroids.
+
+Loss of Power: When larger groups have larger spreads, the $F_1$ test becomes too conservative.
+
+F2Adonis2 provides a mathematically grounded solution by modifying the PERMANOVA test statistic, ensuring valid inference even when groups exhibit heteroscedasticity in non-Euclidean space.
+
+#Methodology: The Robust $F_2$ Statistic#
+
+The $F_2$ statistic addresses the BFP by replacing the pooled residual error term in the denominator with a weighted average of group-specific mean-squared dissimilarities ($V_i$):
+
+$$F_2 = \frac{SS_A / (g - 1)}{\sum_{i=1}^g (1 - n_i/N)V_i}$$
+
+Where $SS_A$ is the among-group sum of squares, $g$ is the number of groups, $n_i$ is the sample size of group $i$, $N$ is the total sample size, and $V_i$ is the group-specific variance calculated in dissimilarity space.
+
+Resampling Methods
+
+For metric distances, the package supports standard permutation. However, for non-metric or semi-metric distances (like Jaccard or Bray-Curtis), the package implements matrix-space residual bootstrapping. This procedure uses a residualized G matrix (Gower's centered matrix) to preserve group-specific dispersions while strictly maintaining the null hypothesis of equal centroids.
+
+#Case Study: Norway Benthic Macrofauna#
+
+To demonstrate the robustness of the $F_2$ statistic, we replicate the analysis of the Norway benthic macrofauna dataset (Ekofisk oil field). This dataset consists of presence-absence data for 809 species across 101 sites, categorized into 5 Areas with unbalanced sample sizes.
+
+1. Load Data and Libraries
+
+```{r}
+
+library(F2Adonis2)
+
+library(vegan)
+
+
+
+# Load package datasets
+
+data(norway_pa)
+
+data(norway_metadata)
+
+
+
+# Unbalanced design overview
+
+table(norway_metadata$Area)
+```
+
+2. Visualizing Dispersion Heterogeneity
+
+Before running the test, we can confirm the presence of the Behrens-Fisher problem by visualizing the unequal group spreads using vegan::betadisper.
+
+```{r}
+dist_jaccard <- vegdist(norway_pa, method = "jaccard")
+
+mod_disp <- betadisper(dist_jaccard, norway_metadata$Area)
+
+# Plotting dispersions
+plot(mod_disp, main = "Multivariate Dispersions (Norway Data)")
+
+boxplot(mod_disp, main = "Distance to Centroid by Area", col = "lightblue")
+```
+
+
+3. Global Robust PERMANOVA
+
+We apply the F2_adonis2 function. We enable bootstrap = TRUE and bias.adjust = TRUE to account for the non-metric nature of the Jaccard distance and to correct for potential variance overestimation in small samples.
+
+
+```{r}
+set.seed(123)
+
+# Running the robust F2 test
+
+fit_results <- F2_adonis2(
+
+  formula = norway_pa ~ Area,
+
+  data = norway_metadata,
+
+  method = "jaccard",
+
+  permutations = 999,
+
+  bootstrap = TRUE,
+
+  bias.adjust = TRUE
+
+)
+
+
+
+print(fit_results)
+```
+
+
+
+#Implementation Details#
+
+The F2_adonis2 function is designed to be a "drop-in" replacement for vegan::adonis2, supporting standard R formulas and distance calculations via vegdist. Key features include:
+
+Internal Consistency: Implements the $V_i$ estimator directly from the distance matrix to handle high-dimensional compositional data.
+
+Flexible Bootstrapping: Offers both standard permutation and separate-sample residual bootstrapping.
+
+Bias Correction: Includes an empirical bias correction for bootstrap variances as derived in Anderson (2017).
+
+#References#
+
+Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017). Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based analyses. Australian & New Zealand Journal of Statistics, 59(1), 57-79. \doi{10.1111/anzs.12176}
+
+#run devtools::build_vignettes()
+
