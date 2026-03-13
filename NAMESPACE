@@ -2,6 +2,7 @@
 
 S3method(anova,F2_adonis2)
 S3method(nobs,F2_adonis2)
+S3method(plot,F2_adonis2)
 export(F2_adonis2)
 importFrom(stats,as.dist)
 importFrom(stats,formula)

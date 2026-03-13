@@ -5,21 +5,22 @@
 #' (Anderson 2017) which is robust to heterogeneous dispersions (Behrens-Fisher problem).
 #'
 #' @param formula Model formula. The LHS must be a community data matrix or a
-#'    dissimilarity matrix. The RHS must define a single factor predictor.
+#'     dissimilarity matrix. The RHS must define a single factor predictor.
 #' @param data A data frame containing the independent variables.
 #' @param permutations Number of permutations for the test, or a permutation matrix.
 #' @param method Pairwise distance method used in \code{vegdist}. Common options include
-#'    "jaccard" (for binary data), "bray" (for abundance data), or "euclidean".
+#'     "jaccard" (for binary data), "bray" (for abundance data), or "euclidean".
 #' @param sqrt.dist Logical; take square root of dissimilarities to "euclidify" them.
 #' @param add Add a constant to dissimilarities to avoid negative eigenvalues.
-#'    Options are "lingoes" or "cailliez".
+#'     Options are "lingoes" or "cailliez".
 #' @param by Validation restricted to \code{NULL}. F2 currently only supports global tests.
 #' @param parallel Number of parallel processes to use.
 #' @param na.action Handling of missing values on the RHS.
 #' @param strata Groups within which to constrain permutations.
 #' @param bootstrap Logical; perform separate-sample residual bootstrapping in
-#'    dissimilarity space (Anderson 2017).
+#'     dissimilarity space (Anderson 2017).
 #' @param bias.adjust Logical; apply empirical bias correction to bootstrap variances.
+#' @param plot.dist Logical; if TRUE (default), plot the permutation distribution of the F2 statistic.
 #' @param ... Other arguments passed to \code{vegdist}.
 #'
 #' @details
@@ -36,29 +37,13 @@
 #'
 #' @author Lakviru Perera (based on logic by Marti J. Anderson)
 #'
-#' @seealso \code{\link[vegan]{adonis2}}, \code{\link[vegan]{betadisper}}
-#'
-#' @examples
-#' library(vegan)
-#' # Example using the Norway Benthic Macrofauna Dataset (Anderson et al. 2017)
-#' data(norway_pa)
-#' data(norway_metadata)
-#' set.seed(123)
-#' fit_global <- F2_adonis2(norway_pa ~ Area, data = norway_metadata,
-#'                          method = "jaccard", permutations = 999)
-#' print(fit_global)
-#'
-#' # Example with built-in data
-#' data(dune)
-#' data(dune.env)
-#' F2_adonis2(dune ~ Management, data = dune.env, method = "bray")
-#'
 #' @export
 F2_adonis2 <-
   function(formula, data, permutations = 999, method = "euclidean",
            sqrt.dist = FALSE, add = FALSE, by = NULL,
            parallel = getOption("mc.cores"), na.action = na.fail,
-           strata = NULL, bootstrap = FALSE, bias.adjust = FALSE, ...)
+           strata = NULL, bootstrap = FALSE, bias.adjust = FALSE,
+           plot.dist = TRUE, ...) # Default changed to TRUE
   {
     if (missing(data)) data <- parent.frame()
     else data <- eval(match.call()$data, parent.frame(), enclos = environment(formula))
@@ -115,6 +100,10 @@ F2_adonis2 <-
     att <- attributes(out)
     att$heading[1] <- "Permutation test for F2-based PERMANOVA"
     attributes(out) <- att
+
+    # Trigger plot automatically by default
+    if (plot.dist) plot(out)
+
     return(out)
   }
 
@@ -192,7 +181,44 @@ anova.F2_adonis2 <- function(object, permutations, bootstrap = FALSE, bias.adjus
   if (!is.na(p_boot)) out$`Pr(>F2.boot)` <- p_boot
   if (!is.na(p_ba)) out$`Pr(>F2.ba)` <- p_ba
   out <- rbind(Model = out, Residual = c(object$CA$rank, object$CA$tot.chi, rep(NA, ncol(out)-2)), Total = c(n-1, object$tot.chi, rep(NA, ncol(out)-2)))
-  class(out) <- c("anova.cca", "anova", "data.frame"); return(out)
+
+  # Attach distribution attribute
+  attr(out, "F.perm") <- F2_p
+
+  class(out) <- c("F2_adonis2", "anova.cca", "anova", "data.frame")
+  return(out)
+}
+
+#' @export
+plot.F2_adonis2 <- function(x, ...) {
+  perm_vals <- attr(x, "F.perm")
+  if (is.null(perm_vals)) stop("No permutation data found.")
+
+  obs_f2 <- x["Model", "F2"]
+  p_val <- x["Model", "Pr(>F2)"]
+
+  # Standard histogram of the distribution
+  hist(perm_vals,
+       main = "F2 Permutation Distribution",
+       xlab = "F2 Statistic",
+       col = "skyblue",
+       border = "white",
+       xlim = range(c(perm_vals, obs_f2)))
+
+  # Vertical line for observed F2
+  abline(v = obs_f2, col = "red", lwd = 2, lty = 2)
+
+  # Get the max x-value of the plot to place the legend accurately
+  plot_max <- max(c(perm_vals, obs_f2))
+
+  # Legend pushed to the absolute right edge
+  legend(x = plot_max,
+         y = max(hist(perm_vals, plot=FALSE)$counts), # Puts it at the top
+         xjust = 1,  # Right-justifies the box so it stays inside the margin
+         legend = c(paste("Observed F2 =", round(obs_f2, 3)),
+                    paste("p-value =", round(p_val, 4))),
+         col = c("red", NA), lwd = c(2, NA), bty = "n",
+         cex = 0.8) # Slightly smaller text to ensure it fits
 }
 
 compute_G <- function(dmat_sq) {

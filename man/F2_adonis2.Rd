@@ -17,6 +17,7 @@ F2_adonis2(
   strata = NULL,
   bootstrap = FALSE,
   bias.adjust = FALSE,
+  plot.dist = TRUE,
   ...
 )
 }
@@ -49,6 +50,8 @@ dissimilarity space (Anderson 2017).}
 
 \item{bias.adjust}{Logical; apply empirical bias correction to bootstrap variances.}
 
+\item{plot.dist}{Logical; if TRUE (default), plot the permutation distribution of the F2 statistic.}
+
 \item{...}{Other arguments passed to \code{vegdist}.}
 }
 \description{
@@ -60,29 +63,10 @@ among sources. Unlike standard PERMANOVA, this function uses the F2 statistic
 \code{F2_adonis2} implements the robust multivariate F2 statistic and the
 matrix-based bootstrap procedure derived in Anderson et al. (2017).
 }
-\examples{
-library(vegan)
-# Example using the Norway Benthic Macrofauna Dataset (Anderson et al. 2017)
-data(norway_pa)
-data(norway_metadata)
-set.seed(123)
-fit_global <- F2_adonis2(norway_pa ~ Area, data = norway_metadata,
-                         method = "jaccard", permutations = 999)
-print(fit_global)
-
-# Example with built-in data
-data(dune)
-data(dune.env)
-F2_adonis2(dune ~ Management, data = dune.env, method = "bray")
-
-}
 \references{
 Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017).
 Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based
 analyses. \emph{Australian & New Zealand Journal of Statistics}.
-}
-\seealso{
-\code{\link[vegan]{adonis2}}, \code{\link[vegan]{betadisper}}
 }
 \author{
 Lakviru Perera (based on logic by Marti J. Anderson)
