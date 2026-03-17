@@ -1,8 +1,8 @@
-#' Permutational Multivariate Analysis of Variance Using the Robust F2 Statistic
+#' Permutational Multivariate Analysis of Variance Using the F2 Statistic
 #'
-#' Robust analysis of variance using distance matrices for partitioning variation
+#' Analysis of variance using distance matrices for partitioning variation
 #' among sources. Unlike standard PERMANOVA, this function uses the F2 statistic
-#' (Anderson 2017) which is robust to heterogeneous dispersions (Behrens-Fisher problem).
+#' (Anderson 2017) which accounts for heterogeneous dispersions (Behrens-Fisher problem).
 #'
 #' @param formula Model formula. The LHS must be a community data matrix or a
 #'     dissimilarity matrix. The RHS must define a single factor predictor.
@@ -24,7 +24,7 @@
 #' @param ... Other arguments passed to \code{vegdist}.
 #'
 #' @details
-#' \code{F2_adonis2} implements the robust multivariate F2 statistic and the
+#' \code{F2_adonis2} implements the multivariate F2 statistic and the
 #' matrix-based bootstrap procedure derived in Anderson et al. (2017).
 #'
 #' @importFrom vegan vegdist

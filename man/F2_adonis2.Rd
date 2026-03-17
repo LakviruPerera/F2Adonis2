@@ -2,7 +2,7 @@
 % Please edit documentation in R/F2_Adonis2_Documentation.R
 \name{F2_adonis2}
 \alias{F2_adonis2}
-\title{Permutational Multivariate Analysis of Variance Using the Robust F2 Statistic}
+\title{Permutational Multivariate Analysis of Variance Using the F2 Statistic}
 \usage{
 F2_adonis2(
   formula,
@@ -55,12 +55,12 @@ dissimilarity space (Anderson 2017).}
 \item{...}{Other arguments passed to \code{vegdist}.}
 }
 \description{
-Robust analysis of variance using distance matrices for partitioning variation
+Analysis of variance using distance matrices for partitioning variation
 among sources. Unlike standard PERMANOVA, this function uses the F2 statistic
-(Anderson 2017) which is robust to heterogeneous dispersions (Behrens-Fisher problem).
+(Anderson 2017) which accounts for heterogeneous dispersions (Behrens-Fisher problem).
 }
 \details{
-\code{F2_adonis2} implements the robust multivariate F2 statistic and the
+\code{F2_adonis2} implements the multivariate F2 statistic and the
 matrix-based bootstrap procedure derived in Anderson et al. (2017).
 }
 \references{
