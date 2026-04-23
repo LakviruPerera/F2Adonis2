@@ -468,9 +468,11 @@ Bias Correction: Includes an empirical bias correction for bootstrap variances a
 
 #References#
 
-Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017). Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based analyses. Australian & New Zealand Journal of Statistics, 59(1), 57-79. \doi{10.1111/anzs.12176}
+Anderson, M.J., Walsh, D.C.I., Robert Clarke, K., Gorley, R.N. and Guerra-Castro, E. (2017), Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based analyses. Aust. N. Z. J. Stat., 59: 57-79. https://doi.org/10.1111/anzs.12176
 
 Dag, O., Dolgun, A., Konar, N.M. (2018). onewaytests: An R Package for One-Way Tests in Independent Groups Designs. The R Journal, 10:1, 175-199.
+
+Oksanen J, Simpson G, Blanchet F, Kindt R, Legendre P, Minchin P, O'Hara R, Solymos P, Stevens M, Szoecs E, Wagner H, Barbour M, Bedward M, Bolker B, Borcard D, Borman T, Carvalho G, Chirico M, De Caceres M, Durand S, Evangelista H, FitzJohn R, Friendly M, Furneaux B, Hannigan G, Hill M, Lahti L, Martino C, McGlinn D, Ouellette M, Ribeiro Cunha E, Smith T, Stier A, Ter Braak C, Weedon J (2026). vegan: Community Ecology Package. R package version 2.8-0, https://vegandevs.github.io/vegan/.
 
 Welch, B. L.(1951). On the Comparison of Several Mean Values: An Alternative Approach. Biometrika, 38, 330-336.
 
