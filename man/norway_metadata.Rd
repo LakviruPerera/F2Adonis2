@@ -5,13 +5,19 @@
 \alias{norway_metadata}
 \title{Norway Benthic Macrofauna Metadata}
 \format{
-A data frame with 101 rows and 1 column (Area).
+A data frame with 101 rows and 1 column:
+\describe{
+  \item{Area}{A grouping factor with 5 levels indicating the specific geographical region.}
+}
+}
+\source{
+\doi{10.1111/anzs.12176}
 }
 \usage{
 norway_metadata
 }
 \description{
-Metadata containing the 'Area' factor (1-5) for the 101 sites
-in the Norway dataset.
+Metadata containing geographical location assignments for the 101 sampled sites
+in the Norway benthic community dataset.
 }
 \keyword{datasets}

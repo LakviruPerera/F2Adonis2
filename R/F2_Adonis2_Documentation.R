@@ -28,7 +28,8 @@
 #' matrix-based bootstrap procedure derived in Anderson et al. (2017).
 #'
 #' @importFrom vegan vegdist
-#' @importFrom stats formula terms model.matrix as.dist na.fail
+#' @importFrom stats formula terms model.matrix as.dist na.fail anova
+#' @importFrom graphics abline hist legend
 #'
 #' @references
 #' Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017).
@@ -43,7 +44,7 @@ F2_adonis2 <-
            sqrt.dist = FALSE, add = FALSE, by = NULL,
            parallel = getOption("mc.cores"), na.action = na.fail,
            strata = NULL, bootstrap = FALSE, bias.adjust = FALSE,
-           plot.dist = TRUE, ...) # Default changed to TRUE
+           plot.dist = TRUE, ...)
   {
     if (missing(data)) data <- parent.frame()
     else data <- eval(match.call()$data, parent.frame(), enclos = environment(formula))
@@ -73,7 +74,7 @@ F2_adonis2 <-
 
     if (!inherits(lhs, "dist")) lhs <- vegdist(as.matrix(lhs), method = method, ...)
 
-    d <- vegan:::ordiParseFormula(formula = formula_obj, data = data, na.action = na.action, subset = NULL, X = lhs)
+    d <- ordiParseFormula(formula = formula_obj, data = data, na.action = na.action, subset = NULL, X = lhs)
     lhs_val <- d$X
 
     if (sqrt.dist) lhs_val <- sqrt(lhs_val)
@@ -81,10 +82,10 @@ F2_adonis2 <-
     if (is.character(add)) {
       add <- match.arg(add, c("lingoes", "cailliez"))
       if (add == "lingoes") {
-        ac <- vegan:::addLingoes(as.matrix(lhs_val))
+        ac <- addLingoes(as.matrix(lhs_val))
         lhs_val <- sqrt(lhs_val^2 + 2 * ac)
       } else if (add == "cailliez") {
-        ac <- vegan:::addCailliez(as.matrix(lhs_val))
+        ac <- addCailliez(as.matrix(lhs_val))
         lhs_val <- lhs_val + ac
       }
     }
@@ -92,23 +93,22 @@ F2_adonis2 <-
     sol <- F2_adonis0(lhs_val, d$Y, d$Z, original_data, original_method)
     sol$formula <- match.call()
     sol$terms <- d$terms
-    sol$terminfo <- vegan:::ordiTerminfo(d, data)
+    sol$terminfo <- ordiTerminfo(d, data)
 
-    perm <- vegan:::getPermuteMatrix(permutations, NROW(lhs_val), strata = strata)
+    perm <- getPermuteMatrix(permutations, NROW(lhs_val), strata = strata)
     out <- anova(sol, permutations = perm, by = by, parallel = parallel, bootstrap = bootstrap, bias.adjust = bias.adjust)
 
     att <- attributes(out)
     att$heading[1] <- "Permutation test for F2-based PERMANOVA"
     attributes(out) <- att
 
-    # Trigger plot automatically by default
     if (plot.dist) plot(out)
 
     return(out)
   }
 
 F2_adonis0 <- function(lhs, X, Z, original_data = NULL, original_method = "euclidean") {
-  G <- vegan:::initDBRDA(lhs)
+  G <- initDBRDA(lhs)
   sol <- list(Ybar = G, tot.chi = sum(diag(G)), method = "F2_adonis",
               dmat_squared = as.matrix(lhs)^2, original_data = original_data,
               original_method = original_method, X_original = X)
@@ -152,14 +152,18 @@ anova.F2_adonis2 <- function(object, permutations, bootstrap = FALSE, bias.adjus
   if (bootstrap) {
     IH <- diag(n) - H_obs
     R_mat <- IH %*% G_obs %*% IH
-    grp_levels <- levels(groups); n_per_group <- table(groups)
+    grp_levels <- levels(groups);
+    n_per_group <- table(groups)[grp_levels]
     H_res_i_list <- lapply(grp_levels, function(g) IH %*% diag(as.numeric(groups == g)) %*% IH)
 
     F2_b <- numeric(n_perms); Vi_bm <- matrix(NA, n_perms, length(grp_levels))
+    colnames(Vi_bm) <- grp_levels
+    beta_list <- vector("list", n_perms)
 
     for (i in 1:n_perms) {
       beta <- integer(n)
       for (g in grp_levels) { idx_g <- which(groups == g); beta[idx_g] <- sample(idx_g, replace = TRUE) }
+      beta_list[[i]] <- beta
       R_boot <- R_mat[beta, beta]; ss_ab  <- sum(diag(H_obs %*% R_boot))
       Vi_boot <- sapply(1:length(grp_levels), function(k) sum(diag(H_res_i_list[[k]] %*% R_boot)) / (n_per_group[k] - 1))
       den_b <- sum((1 - as.numeric(n_per_group) / n) * Vi_boot)
@@ -168,10 +172,15 @@ anova.F2_adonis2 <- function(object, permutations, bootstrap = FALSE, bias.adjus
     p_boot <- (sum(F2_b >= F2_obs, na.rm = TRUE) + 1) / (n_perms + 1)
 
     if (bias.adjust) {
-      bias <- colMeans(Vi_bm, na.rm = TRUE) - Vi_obs
+      Vi_obs_aligned <- Vi_obs[grp_levels]
+      bias <- colMeans(Vi_bm, na.rm = TRUE) - Vi_obs_aligned
       f2_ba <- sapply(1:n_perms, function(i) {
-        den <- sum((1 - as.numeric(n_per_group)/n) * (Vi_bm[i,] - bias))
-        if(den > 0) sum(diag(H_obs %*% R_mat[sample(1:n, replace=TRUE), sample(1:n, replace=TRUE)])) / den else NA
+        beta   <- beta_list[[i]]
+        R_boot <- R_mat[beta, beta]
+        ss_ab  <- sum(diag(H_obs %*% R_boot))
+        Vi_ba  <- Vi_bm[i, ] - bias
+        den    <- sum((1 - as.numeric(n_per_group) / n) * Vi_ba)
+        if (den > 0) ss_ab / den else NA
       })
       p_ba <- (sum(f2_ba >= F2_obs, na.rm = TRUE) + 1) / (n_perms + 1)
     }
@@ -182,7 +191,6 @@ anova.F2_adonis2 <- function(object, permutations, bootstrap = FALSE, bias.adjus
   if (!is.na(p_ba)) out$`Pr(>F2.ba)` <- p_ba
   out <- rbind(Model = out, Residual = c(object$CA$rank, object$CA$tot.chi, rep(NA, ncol(out)-2)), Total = c(n-1, object$tot.chi, rep(NA, ncol(out)-2)))
 
-  # Attach distribution attribute
   attr(out, "F.perm") <- F2_p
 
   class(out) <- c("F2_adonis2", "anova.cca", "anova", "data.frame")
@@ -197,7 +205,6 @@ plot.F2_adonis2 <- function(x, ...) {
   obs_f2 <- x["Model", "F2"]
   p_val <- x["Model", "Pr(>F2)"]
 
-  # Standard histogram of the distribution
   hist(perm_vals,
        main = "F2 Permutation Distribution",
        xlab = "F2 Statistic",
@@ -205,20 +212,17 @@ plot.F2_adonis2 <- function(x, ...) {
        border = "white",
        xlim = range(c(perm_vals, obs_f2)))
 
-  # Vertical line for observed F2
   abline(v = obs_f2, col = "red", lwd = 2, lty = 2)
 
-  # Get the max x-value of the plot to place the legend accurately
   plot_max <- max(c(perm_vals, obs_f2))
 
-  # Legend pushed to the absolute right edge
   legend(x = plot_max,
-         y = max(hist(perm_vals, plot=FALSE)$counts), # Puts it at the top
-         xjust = 1,  # Right-justifies the box so it stays inside the margin
+         y = max(hist(perm_vals, plot=FALSE)$counts),
+         xjust = 1,
          legend = c(paste("Observed F2 =", round(obs_f2, 3)),
                     paste("p-value =", round(p_val, 4))),
          col = c("red", NA), lwd = c(2, NA), bty = "n",
-         cex = 0.8) # Slightly smaller text to ensure it fits
+         cex = 0.8)
 }
 
 compute_G <- function(dmat_sq) {
@@ -243,5 +247,6 @@ calculate_F2_and_Vi <- function(dmat_sq, grp_ID, SS.A, n) {
   return(list(F2 = SS.A / denom, Vi = VL))
 }
 
+#' @importFrom stats nobs
 #' @export
 nobs.F2_adonis2 <- function(object, ...) nrow(object$dmat_squared)

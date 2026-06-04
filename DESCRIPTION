@@ -6,18 +6,23 @@ Description: Implements the F2 statistic and bias-adjusted
     bootstrap for dissimilarity-based multivariate analysis of variance. 
     Based on the solutions for the multivariate Behrens-Fisher problem 
     proposed by Anderson et al. (2017) <doi:10.1111/anzs.12176>.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: 
-    vegan,
-    mvtnorm
+    stats,
+    vegan
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
 LazyData: true
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    dplyr,
+    ggplot2,
+    onewaytests,
+    tidyverse,
+    yarrr
 VignetteBuilder: knitr
 URL: https://github.com/LakviruPerera/F2Adonis2
 BugReports: https://github.com/LakviruPerera/F2Adonis2/issues

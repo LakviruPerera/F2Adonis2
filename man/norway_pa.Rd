@@ -5,7 +5,7 @@
 \alias{norway_pa}
 \title{Norway Benthic Macrofauna Presence-Absence Data}
 \format{
-A matrix with 101 rows and 809 columns.
+A matrix with 101 rows (sites) and 809 columns (species).
 }
 \source{
 \doi{10.1111/anzs.12176}
@@ -14,7 +14,7 @@ A matrix with 101 rows and 809 columns.
 norway_pa
 }
 \description{
-A presence-absence matrix for 809 species across 101 sites,
-used as a validation case in Anderson et al. (2017).
+A presence-absence matrix for 809 marine macrofauna species across 101 sites,
+utilized as a baseline biological validation dataset.
 }
 \keyword{datasets}
