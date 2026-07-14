@@ -434,7 +434,7 @@ cat(sprintf("Final Processed Data: %d samples x %d metabolites\n",
             nrow(Y_pkd_final), ncol(Y_pkd_final)))
 
 # ==============================================================================
-# 2. PERFORM ROBUST F2 ANALYSIS
+# 2. PERFORM F2 ANALYSIS
 # ==============================================================================
 cat("\n--- Running Robust F2 PERMANOVA ---\n")
 
