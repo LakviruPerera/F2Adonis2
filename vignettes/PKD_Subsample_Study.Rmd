@@ -1,0 +1,234 @@
+---
+title: "PKD_Subsample_Study"
+author: "Lakviru Perera"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PKD_Subsample_Study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+This vignette demonstrates the divergence between standard PERMANOVA ($F_1$)
+and the modified F2 statistic under a deliberately unbalanced, dispersion-
+heterogeneous subsample of the PKD urinary metabolomics dataset (10 Ctrl / 20
+PKD), and cross-checks the result using dispersion diagnostics, ordination,
+and component-level decomposition.
+
+To keep this vignette fast to build, all permutation tests below use
+`permutations = 99` rather than the `permutations = 999` used to generate the
+results reported in the accompanying JOSS paper. Results here will therefore
+approximate, but not exactly reproduce, the paper's reported statistics and
+p-values. A code snippet reproducing the paper's exact settings (999
+permutations) is included at the end of this vignette for reference.
+
+```{r}
+#| label: fig-pkd-subsample
+#| fig-cap: "Check on a subsampled PKD dataset (10 Ctrl / 20 PKD): dispersion diagnostics, F1 vs. F2 inference, PCA ordination, and component-level decomposition."
+
+library(dplyr)
+library(vegan)
+library(F2Adonis2)
+library(kableExtra)
+library(ggplot2)
+library(combinat)
+
+# Load package data objects explicitly
+data("pkd_metadata", package = "F2Adonis2")
+data("pkd_metabolites", package = "F2Adonis2")
+
+set.seed(527)
+
+# ==============================================================================
+# 1. Sub-sample the PKD dataset (10 Ctrl / 20 PKD)
+# ==============================================================================
+sub_metadata <- bind_rows(
+  pkd_metadata %>% filter(Group == "Ctrl") %>% slice_sample(n = 10),
+  pkd_metadata %>% filter(Group == "PKD") %>% slice_sample(n = 20)
+)
+sub_metabolites <- pkd_metabolites[rownames(sub_metadata), ]
+dist_sub <- vegdist(sub_metabolites, method = "euclidean")
+
+# ==============================================================================
+# 2. Dispersion diagnostics (betadisper)
+# ==============================================================================
+mod_sub <- betadisper(dist_sub, sub_metadata$Group)
+anova_disp <- permutest(mod_sub, permutations = 99)
+print(anova_disp)
+
+# Spatial hull plot
+plot(mod_sub, hull = TRUE, ellipse = FALSE,
+     main = "Spatial Dispersion: Sub-sample (10 Ctrl / 20 PKD)")
+
+# Violin + boxplot + jittered points of distance-to-centroid
+distances_df <- data.frame(
+  distance = mod_sub$distances,
+  group = mod_sub$group
+)
+
+ggplot(distances_df, aes(x = group, y = distance, fill = group)) +
+  geom_violin(alpha = 0.2, trim = TRUE, color = NA) +
+  geom_boxplot(width = 0.2, alpha = 0.6, outlier.shape = NA) +
+  geom_jitter(width = 0.1, size = 1.5, alpha = 0.5) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "none",
+    panel.grid.major.x = element_blank()
+  ) +
+  labs(
+    title = "Dispersion Check: Sub-sampled Data",
+    x = "Group",
+    y = "Distance to Centroid"
+  )
+
+# ==============================================================================
+# 3. F1 vs. F2 inference on the subsample
+# ==============================================================================
+pkd_fit_f1_sub <- adonis2(dist_sub ~ Group, data = sub_metadata,
+                          method = "euclidean", permutations = 99)
+
+pkd_fit_f2_sub <- F2_adonis2(dist_sub ~ Group, data = sub_metadata,
+                             method = "euclidean", permutations = 99)
+
+f1_p_sub <- pkd_fit_f1_sub["Model", "Pr(>F)"]
+f2_p_sub <- pkd_fit_f2_sub["Model", "Pr(>F2)"]
+
+sub_results <- data.frame(
+  Sample_Size = "10 Ctrl / 20 PKD",
+  F1_Pval = f1_p_sub,
+  F2_Pval = f2_p_sub,
+  Verdict = ifelse(f2_p_sub > 0.05 & f1_p_sub < 0.05, "Conflicted", "Consistent")
+)
+
+sub_results %>%
+  mutate(
+    F1_Pval = sprintf("%.4f%s", F1_Pval, ifelse(F1_Pval < 0.05, "*", "")),
+    F2_Pval = sprintf("%.4f", F2_Pval)
+  ) %>%
+  kable(
+    col.names = c(
+      "Subsample Configuration",
+      "Standard F1 ($p$)",
+      "F2 ($p$)",
+      "Verdict"
+    ),
+    escape = FALSE,
+    caption = "Check: Subsampled PKD Analysis"
+  ) %>%
+  kable_styling(full_width = FALSE)
+
+print(pkd_fit_f1_sub)
+print(pkd_fit_f2_sub)
+
+# F1 permutation null distribution
+psub_f1 <- permustats(pkd_fit_f1_sub)
+f1_plot_data <- data.frame(F_vals = as.numeric(psub_f1$permutations))
+f1_obs_stat <- pkd_fit_f1_sub["Model", "F"]
+
+ggplot(f1_plot_data, aes(x = F_vals)) +
+  geom_histogram(bins = 30, fill = "darkgoldenrod", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = f1_obs_stat, color = "red", linewidth = 1.2, linetype = "dashed") +
+  annotate("text", x = f1_obs_stat, y = Inf, label = paste("Observed F =", round(f1_obs_stat, 3)),
+           vjust = 2, hjust = -0.1, color = "red", fontface = "bold") +
+  theme_minimal() +
+  labs(
+    title = "F1 Null Distribution: PKD Subsample",
+    x = "Permuted Pseudo-F Statistic",
+    y = "Frequency"
+  )
+
+# ==============================================================================
+# 4. PCA ordination and component-level decomposition
+# ==============================================================================
+pca_fit <- prcomp(sub_metabolites, scale. = TRUE)
+pca_scores <- pca_fit$x[, 1:5]
+comp_data <- data.frame(pca_scores, Group = sub_metadata$Group)
+var_exp <- (pca_fit$sdev^2 / sum(pca_fit$sdev^2)) * 100
+
+# PCA scores plot (PC1 vs PC2)
+ggplot(comp_data, aes(x = PC1, y = PC2, color = Group, fill = Group)) +
+  geom_point(size = 3, alpha = 0.6) +
+  stat_ellipse(geom = "polygon", alpha = 0.2) +
+  theme_minimal() +
+  labs(title = "PCA Scores: Subsampled Data",
+       subtitle = "Visualizing the overlap of group centroids",
+       x = paste0("PC1 (", round(var_exp[1], 1), "%)"),
+       y = paste0("PC2 (", round(var_exp[2], 1), "%)"))
+
+# Univariate t-tests on the top 5 PCs
+univariate_tests <- lapply(1:5, function(i) {
+  test <- t.test(comp_data[[i]] ~ comp_data$Group)
+  data.frame(Component = paste0("PC", i), P_Value = test$p.value)
+})
+
+do.call(rbind, univariate_tests) %>%
+  mutate(P_Value = sprintf("%.4f%s", P_Value, ifelse(P_Value < 0.05, "*", ""))) %>%
+  kable(caption = "Decomposition: Univariate Significance of Components",
+        booktabs = TRUE) %>%
+  kable_styling(latex_options = "hold_position")
+
+# Pairwise F2 sensitivity analysis across all 2D PC planes
+pc_pairs <- combn(1:5, 2)
+
+pairwise_results <- lapply(1:ncol(pc_pairs), function(i) {
+  pair_idx <- pc_pairs[, i]
+  dist_pair <- dist(pca_scores[, pair_idx], method = "euclidean")
+  
+  fit <- F2_adonis2(dist_pair ~ Group, data = sub_metadata,
+                    permutations = 99, bootstrap = FALSE, plot.dist = FALSE)
+  
+  data.frame(
+    Pair = paste0("PC", pair_idx[1], " vs PC", pair_idx[2]),
+    F2_Stat = fit["Model", "F2"],
+    P_Value = fit["Model", "Pr(>F2)"]
+  )
+})
+
+do.call(rbind, pairwise_results) %>%
+  mutate(P_Value = sprintf("%.4f%s", P_Value, ifelse(P_Value < 0.05, "*", ""))) %>%
+  kable(caption = "Pairwise Sensitivity Analysis: F2 on 2D PC Planes",
+        booktabs = TRUE) %>%
+  kable_styling(latex_options = "hold_position")
+```
+
+## Reproducing the paper's exact settings
+
+The chunk below reproduces the same analysis using `permutations = 999`, the
+setting used to generate the results reported in the accompanying JOSS paper.
+It is not executed automatically when this vignette is built, since running
+999 permutations across the twelve model fits above is unnecessarily slow for
+routine package documentation. Copy this code into an R session to run it
+directly.
+
+```{r pkd-subsample-full, eval = FALSE}
+pkd_fit_f1_sub <- adonis2(dist_sub ~ Group, data = sub_metadata,
+                          method = "euclidean", permutations = 999)
+
+pkd_fit_f2_sub <- F2_adonis2(dist_sub ~ Group, data = sub_metadata,
+                             method = "euclidean", permutations = 999)
+
+pairwise_results_full <- lapply(1:ncol(pc_pairs), function(i) {
+  pair_idx <- pc_pairs[, i]
+  dist_pair <- dist(pca_scores[, pair_idx], method = "euclidean")
+
+  fit <- F2_adonis2(dist_pair ~ Group, data = sub_metadata,
+                    permutations = 999, bootstrap = FALSE, plot.dist = FALSE)
+
+  data.frame(
+    Pair = paste0("PC", pair_idx[1], " vs PC", pair_idx[2]),
+    F2_Stat = fit["Model", "F2"],
+    P_Value = fit["Model", "Pr(>F2)"]
+  )
+})
+
+do.call(rbind, pairwise_results_full)
+```

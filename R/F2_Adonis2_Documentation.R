@@ -38,6 +38,24 @@
 #'
 #' @author Lakviru Perera (based on logic by Marti J. Anderson)
 #'
+#' @examples
+#' # Load internal package data objects
+#' data("pkd_metadata", package = "F2Adonis2")
+#' data("pkd_metabolites", package = "F2Adonis2")
+#'
+#' # Set up a data frame for the group factor
+#' pkd_meta <- data.frame(Group = factor(pkd_metadata$Group))
+#'
+#' # Example using 99 permutations
+#' fit <- F2_adonis2(
+#'   formula = as.matrix(pkd_metabolites) ~ Group,
+#'   data = pkd_meta,
+#'   method = "euclidean",
+#'   permutations = 99,
+#'   plot.dist = FALSE
+#' )
+#' print(fit)
+#'
 #' @export
 F2_adonis2 <-
   function(formula, data, permutations = 999, method = "euclidean",
@@ -164,7 +182,7 @@ anova.F2_adonis2 <- function(object, permutations, bootstrap = FALSE, bias.adjus
       beta <- integer(n)
       for (g in grp_levels) { idx_g <- which(groups == g); beta[idx_g] <- sample(idx_g, replace = TRUE) }
       beta_list[[i]] <- beta
-      R_boot <- R_mat[beta, beta]; ss_ab  <- sum(diag(H_obs %*% R_boot))
+      R_boot <- R_mat[beta, beta]; ss_ab  <- sum(H_obs * t(R_boot))
       Vi_boot <- sapply(1:length(grp_levels), function(k) sum(diag(H_res_i_list[[k]] %*% R_boot)) / (n_per_group[k] - 1))
       den_b <- sum((1 - as.numeric(n_per_group) / n) * Vi_boot)
       F2_b[i] <- ss_ab / den_b; Vi_bm[i,] <- Vi_boot
@@ -177,7 +195,7 @@ anova.F2_adonis2 <- function(object, permutations, bootstrap = FALSE, bias.adjus
       f2_ba <- sapply(1:n_perms, function(i) {
         beta   <- beta_list[[i]]
         R_boot <- R_mat[beta, beta]
-        ss_ab  <- sum(diag(H_obs %*% R_boot))
+        ss_ab  <- sum(H_obs * t(R_boot))
         Vi_ba  <- Vi_bm[i, ] - bias
         den    <- sum((1 - as.numeric(n_per_group) / n) * Vi_ba)
         if (den > 0) ss_ab / den else NA

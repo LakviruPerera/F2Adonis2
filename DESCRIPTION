@@ -1,7 +1,7 @@
 Package: F2Adonis2
 Title: PERMANOVA using the F2 Statistic
 Version: 0.1.0
-Authors@R: person("Lakviru", "Perera", email = "email@example.com", role = c("aut", "cre"))
+Authors@R: person("Lakviru", "Perera", email = "korathotagelaperera@montana.edu", role = c("aut", "cre"))
 Description: Implements the F2 statistic and bias-adjusted 
     bootstrap for dissimilarity-based multivariate analysis of variance. 
     Based on the solutions for the multivariate Behrens-Fisher problem 
@@ -13,16 +13,17 @@ Imports:
     vegan
 RoxygenNote: 7.3.3
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1.0)
 LazyData: true
 Suggests: 
-    knitr,
+   knitr,
     rmarkdown,
     dplyr,
     ggplot2,
     onewaytests,
-    tidyverse,
-    yarrr
+    yarrr,
+    combinat,
+    kableExtra
 VignetteBuilder: knitr
 URL: https://github.com/LakviruPerera/F2Adonis2
 BugReports: https://github.com/LakviruPerera/F2Adonis2/issues

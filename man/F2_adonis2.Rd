@@ -63,6 +63,25 @@ among sources. Unlike standard PERMANOVA, this function uses the F2 statistic
 \code{F2_adonis2} implements the multivariate F2 statistic and the
 matrix-based bootstrap procedure derived in Anderson et al. (2017).
 }
+\examples{
+# Load internal package data objects
+data("pkd_metadata", package = "F2Adonis2")
+data("pkd_metabolites", package = "F2Adonis2")
+
+# Set up a data frame for the group factor
+pkd_meta <- data.frame(Group = factor(pkd_metadata$Group))
+
+# Example using 99 permutations
+fit <- F2_adonis2(
+  formula = as.matrix(pkd_metabolites) ~ Group,
+  data = pkd_meta,
+  method = "euclidean",
+  permutations = 99,
+  plot.dist = FALSE
+)
+print(fit)
+
+}
 \references{
 Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017).
 Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based

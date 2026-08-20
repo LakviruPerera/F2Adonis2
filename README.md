@@ -16,7 +16,7 @@ rates when group dispersions are unequal (heteroscedasticity) and group
 sizes are unbalanced.
 
 This package implements the methodological solutions proposed by
-**Anderson et al. (2017)**. Rather than pooling variance across groups
+**Anderson et al.(2017)**. Rather than pooling variance across groups
 (which leads to bias), the $F_2$ statistic uses a weighted combination
 of group-specific dispersion estimates to maintain level accuracy under
 arbitrary heteroscedastic conditions.
