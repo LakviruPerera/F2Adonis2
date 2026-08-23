@@ -255,13 +255,24 @@ get_H <- function(rhs) {
 }
 
 calculate_F2_and_Vi <- function(dmat_sq, grp_ID, SS.A, n) {
-  n_i <- table(grp_ID); VL <- rep(0, length(n_i)); names(VL) <- names(n_i)
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      if (grp_ID[i] == grp_ID[j]) { g <- as.character(grp_ID[i]); VL[g] <- VL[g] + (dmat_sq[i, j] / (n_i[g] * (n_i[g] - 1))) }
-    }
+  grp_ID <- droplevels(as.factor(grp_ID))
+  grp_levels <- levels(grp_ID)
+  grp_int <- as.integer(grp_ID)
+  n_i <- as.numeric(table(grp_ID))
+
+  g <- length(grp_levels)
+  same_grp <- outer(grp_int, grp_int, "==")
+  masked <- dmat_sq * same_grp
+  diag(masked) <- 0
+
+  VL <- numeric(g)
+  for (k in 1:g) {
+    idx_k <- which(grp_int == k)
+    VL[k] <- sum(masked[idx_k, idx_k]) / (2 * n_i[k] * (n_i[k] - 1))
   }
-  denom <- sum((1 - (as.numeric(n_i) / n)) * VL)
+  names(VL) <- grp_levels
+
+  denom <- sum((1 - (n_i / n)) * VL)
   return(list(F2 = SS.A / denom, Vi = VL))
 }
 
