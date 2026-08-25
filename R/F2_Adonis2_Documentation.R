@@ -86,6 +86,15 @@ F2_adonis2 <-
       stop("The predictor variable must be a factor.", call. = FALSE)
     }
 
+    group_counts <- table(predictor_val)
+    if (any(group_counts < 2)) {
+      bad_grps <- names(group_counts)[group_counts < 2]
+      stop(sprintf(
+        "F2_adonis2 requires at least 2 observations per group to estimate dispersion. Group(s) with fewer replicates: %s",
+        paste(bad_grps, collapse = ", ")
+      ), call. = FALSE)
+    }
+
     lhs <- eval(formula_obj[[2]], envir = parent.frame(), enclos = environment(formula_obj))
     original_data <- if (!inherits(lhs, "dist") && !isSymmetric(unname(as.matrix(lhs)))) as.matrix(lhs) else NULL
     original_method <- method
