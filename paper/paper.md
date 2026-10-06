@@ -54,7 +54,7 @@ Parametric adjustments for the multivariate Behrens-Fisher problem, such as the 
 
 Based on our simulations and Anderson et al. [-@anderson2017some], we recommend the workflow as illustrated in \autoref{fig:pathway_diagram}, where most concern for $F_1$ is with unbalanced designs with clear (detectable) dispersion differences.
 
-![Recommended structural pathways for distance-based multivariate centroid testing under potential variance heteroskedasticity.\label{fig:pathway_diagram}](F2_Poster_Original/pathway_diagram.png){ width=85% }
+![Recommended structural pathways for distance-based multivariate centroid testing under potential variance heteroskedasticity.\label{fig:pathway_diagram}](pathway_diagram.png){ width=85% }
 
 # Software design
 
@@ -108,7 +108,7 @@ The Norway Benthic Macrofauna dataset [@gray2002analysis] records presence-absen
 
 : Results on the Norway Benthic Macrofauna baseline dataset (Jaccard dissimilarity, 999 permutations).\label{tbl:norway}
 
-![Multivariate dispersion plot and $F_2$ permutation distribution for the Norway baseline study.\label{fig:norway_plots}](F2_Poster_Original/Norway_combined.png){ width=85% }
+![Multivariate dispersion plot and $F_2$ permutation distribution for the Norway baseline study.\label{fig:norway_plots}](Norway_combined.png){ width=85% }
 
 ## Clinical Application: Early-Stage PKD Metabolomics
 
@@ -125,7 +125,7 @@ Homogeneity testing confirmed strong dispersion heterogeneity ($p = 0.017$). Sta
 
 This was corroborated by component-level decomposition. Welch's $t$-tests on the top five principal components showed weak evidence of group differences on any axis (PC1: $p=0.164$; PC2: $p=0.204$; PC3: $p=0.292$; PC4: $p=0.704$; PC5: $p=0.345$), and pairwise $F_2$ sensitivity analyses on all ten two-dimensional PC planes provided similarly large p-values. None of these results were adjusted for multiple testing.
 
-![$F_1$ permutation distribution and PCoA scores plot for the PKD dataset.\label{fig:pkd_plots}](F2_Poster_Original/PKD_combined.png){ width=85% }
+![$F_1$ permutation distribution and PCoA scores plot for the PKD dataset.\label{fig:pkd_plots}](PKD_combined.png){ width=85% }
 
 # AI usage disclosure
 
