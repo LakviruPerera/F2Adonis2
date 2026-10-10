@@ -1,7 +1,13 @@
 Package: F2Adonis2
 Title: PERMANOVA using the F2 Statistic
 Version: 0.1.0
-Authors@R: person("Lakviru", "Perera", email = "korathotagelaperera@montana.edu", role = c("aut", "cre"))
+Authors@R: c(
+    person("Lakviru", "Perera", email = "korathotagelaperera@montana.edu",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0003-7717-3532")),
+    person("Mark", "Greenwood", role = "aut",
+           comment = c(ORCID = "0000-0001-6933-1201"))
+    )
 Description: Implements the F2 statistic and bias-adjusted 
     bootstrap for dissimilarity-based multivariate analysis of variance. 
     Based on the solutions for the multivariate Behrens-Fisher problem 
