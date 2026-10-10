@@ -16,14 +16,16 @@ Depends:
     R (>= 4.1.0)
 LazyData: true
 Suggests: 
-   knitr,
+    knitr,
     rmarkdown,
     dplyr,
     ggplot2,
     onewaytests,
     yarrr,
     combinat,
-    kableExtra
+    kableExtra,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://github.com/LakviruPerera/F2Adonis2
 BugReports: https://github.com/LakviruPerera/F2Adonis2/issues
+Config/testthat/edition: 3
