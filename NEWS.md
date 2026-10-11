@@ -2,6 +2,7 @@
 
 * Added `NEWS.md`, `CONTRIBUTING.md`, and a support section in the README.
 * Added a GitHub Actions workflow that runs `R CMD check` on Linux, macOS, and Windows.
+* Added tests for the F2 calculation, input validation, and the bootstrap options.
 
 # F2Adonis2 0.1.0
 
