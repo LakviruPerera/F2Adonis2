@@ -8,8 +8,7 @@ F2Adonis2 is a tool for multivariate hypothesis testing, developed to
 support clinical metabolomics and high-dimensional omics research. It
 addresses the multivariate Behrens-Fisher Problem in dissimilarity-based
 analyses (such as PERMANOVA), providing a statistically sound approach
-for datasets where group dispersions are heterogeneous. It is only
-available on GitHub.
+for datasets where group dispersions are heterogeneous. It is available on GitHub.
 
 ## Motivation
 
