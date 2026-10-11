@@ -1,5 +1,9 @@
 # F2Adonis2
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/LakviruPerera/F2Adonis2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LakviruPerera/F2Adonis2/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 F2Adonis2 is a tool for multivariate hypothesis testing, developed to
 support clinical metabolomics and high-dimensional omics research. It
 addresses the multivariate Behrens-Fisher Problem in dissimilarity-based
