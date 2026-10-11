@@ -1,5 +1,7 @@
 # F2Adonis2 (development version)
 
+* Added `NEWS.md`, `CONTRIBUTING.md`, and a support section in the README.
+
 # F2Adonis2 0.1.0
 
 * First tagged release.

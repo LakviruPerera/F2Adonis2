@@ -1,4 +1,3 @@
-
 # F2Adonis2
 
 F2Adonis2 is a tool for multivariate hypothesis testing, developed to
@@ -12,21 +11,21 @@ available on GitHub.
 
 In high-dimensional ecological and metabolomics studies ($P \gg N$),
 standard PERMANOVA ($F_1$) methods often yield inflated Type I error
-rates when group dispersions are unequal (heteroscedasticity) and group
+rates when group dispersions are unequal (heteroskedasticity) and group
 sizes are unbalanced.
 
 This package implements the methodological solutions proposed by
-**Anderson et al.(2017)**. Rather than pooling variance across groups
+**Anderson et al. (2017)**. Rather than pooling variance across groups
 (which leads to bias), the $F_2$ statistic uses a weighted combination
 of group-specific dispersion estimates to maintain level accuracy under
-arbitrary heteroscedastic conditions.
+heteroskedastic conditions.
 
 ## Installation
 
 You must install the `remotes` package first.
 
 ``` r
-install.packages("remotes", repos = "[https://cloud.r-project.org](https://cloud.r-project.org)")
+install.packages("remotes")
 ```
 
 Then, use `install_github` to install this package.
@@ -38,28 +37,36 @@ remotes::install_github("LakviruPerera/F2Adonis2")
 ## Quick Start
 
 `F2Adonis2` acts as a drop-in replacement for `vegan::adonis2`. It
-expects a distance matrix (typically from `vegdist`) and follows the
-standard R formula interface.
+follows the standard R formula interface and accepts either a data
+matrix (distances are computed with `vegdist`) or a precomputed
+dissimilarity (`dist`) object on the left-hand side.
 
 ``` r
-
 library(F2Adonis2)
-library(vegan)
 
-# Calculate dissimilarity matrix
-dist_sub <- vegdist(sub_metabolites, method = "euclidean")
+# Example data included with the package
+data("pkd_metadata", package = "F2Adonis2")
+data("pkd_metabolites", package = "F2Adonis2")
 
+pkd_meta <- data.frame(Group = factor(pkd_metadata$Group))
 
-# Run the robust F2 test
-fit_f2 <- F2_adonis2(dist_sub ~ Group, 
+# Run the F2 test (use more permutations, e.g. 999, for final results)
+fit_f2 <- F2_adonis2(
+  as.matrix(pkd_metabolites) ~ Group,
+  data = pkd_meta,
+  method = "euclidean",
+  permutations = 99
+)
 
-                     data = sub_metadata, 
-
-                     permutations = 999)
-
-# View Results
+# View results
 print(fit_f2)
 ```
+
+## Support and contributing
+
+Questions and bug reports are welcome on the
+[issue tracker](https://github.com/LakviruPerera/F2Adonis2/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to report a bug or propose a change.
 
 ## References
 
