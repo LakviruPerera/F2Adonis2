@@ -32,11 +32,11 @@ library(F2Adonis2)
 
 #Summary#
 
-F2Adonis2 is an R package designed for robust multivariate analysis of variance using distance matrices. It implements the $F_2$ statistic as proposed by Anderson et al. (2017) to provide a solution to the multivariate Behrens-Fisher problem (BFP). The BFP arises when researchers need to test the null hypothesis of equality of mean vectors (centroids) across two or more populations while their dispersion matrices (variances) differ.
+F2Adonis2 is an R package designed for reliable multivariate analysis of variance using distance matrices. It implements the $F_2$ statistic as proposed by Anderson et al. (2017) to provide a solution to the multivariate Behrens-Fisher problem (BFP). The BFP arises when researchers need to test the null hypothesis of equality of mean vectors (centroids) across two or more populations while their dispersion matrices (variances) differ.
 
 #Statement of Need#
 
-In multivariate ecological and biological studies, researchers often rely on distance-based permutational methods like PERMANOVA (the $F_1$ statistic) to detect differences among groups. However, standard PERMANOVA is strictly valid only when group dispersions are homogeneous. As demonstrated in Anderson et al. (2017), the $F_1$ test is not robust to heterogeneity of dispersions in the space of the chosen dissimilarity measure, particularly for unbalanced designs:
+In multivariate ecological and biological studies, researchers often rely on distance-based permutational methods like PERMANOVA (the $F_1$ statistic) to detect differences among groups. However, standard PERMANOVA is strictly valid only when group dispersions are homogeneous. As demonstrated in Anderson et al. (2017), the $F_1$ test is not reliable under heterogeneous dispersions in the space of the chosen dissimilarity measure, particularly for unbalanced designs:
 
 Inflated Type I Error: When smaller groups have larger spreads, the $F_1$ test becomes too liberal, falsely identifying differences in centroids.
 
@@ -44,7 +44,7 @@ Loss of Power: When larger groups have larger spreads, the $F_1$ test becomes to
 
 F2Adonis2 provides a mathematically grounded solution by modifying the PERMANOVA test statistic, ensuring valid inference even when groups exhibit heteroscedasticity in non-Euclidean space.
 
-#Methodology: The Robust $F_2$ Statistic#
+#Methodology: The $F_2$ Statistic#
 
 The $F_2$ statistic addresses the BFP by replacing the pooled residual error term in the denominator with a weighted average of group-specific mean-squared dissimilarities ($V_i$):
 
@@ -58,7 +58,7 @@ For metric distances, the package supports standard permutation. However, for no
 
 #Case Study: Norway Benthic Macrofauna#
 
-To demonstrate the robustness of the $F_2$ statistic, we replicate the analysis of the Norway benthic macrofauna dataset (Ekofisk oil field). This dataset consists of presence-absence data for 809 species across 101 sites, categorized into 5 Areas with unbalanced sample sizes.
+To demonstrate the effectiveness of the $F_2$ statistic, we replicate the analysis of the Norway benthic macrofauna dataset (Ekofisk oil field). This dataset consists of presence-absence data for 809 species across 101 sites, categorized into 5 Areas with unbalanced sample sizes.
 
 1. Load Data and Libraries
 
@@ -119,7 +119,7 @@ pirateplot(formula = Distance ~ Area,
 ```
 
 
-3. Global Robust PERMANOVA
+3. Global F2 PERMANOVA
 
 We apply the F2_adonis2 function. We enable bootstrap = TRUE and bias.adjust = TRUE to account for the non-metric nature of the Jaccard distance and to correct for potential variance overestimation in small samples. `permutations = 99` is used here to reduce the running time; the accompanying JOSS paper reports results at `permutations = 999`.
 
@@ -144,7 +144,7 @@ fit_results1 <- adonis2(
 fit_results1
 
 
-# Running the robust F2 test
+# Running the F2 test
 
 fit_results2 <- F2_adonis2(
 
@@ -291,7 +291,7 @@ ggplot(null_df, aes(x = Value, fill = Test)) +
 # ==============================================================================
 # 5. High-Dimensional Case Study (PKD Metabolomics)
 # ==============================================================================
-# Demonstrating scaling to 932 variables where Welch's F is unavailable.
+# Demonstrating scaling to 1,554 variables where Welch's F is unavailable.
 library(dplyr)
 library(F2Adonis2)
 
@@ -312,7 +312,7 @@ cat(sprintf("Final Processed Data: %d samples x %d metabolites\n",
 # ==============================================================================
 # PERFORM F2 ANALYSIS
 # ==============================================================================
-cat("\n--- Running Robust F2 PERMANOVA ---\n")
+cat("\n--- Running F2 PERMANOVA ---\n")
 
 pkd_meta <- data.frame(Group = group_labels)
 
