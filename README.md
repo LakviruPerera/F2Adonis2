@@ -69,19 +69,21 @@ print(fit_f2)
 
 Questions and bug reports are welcome on the
 [issue tracker](https://github.com/LakviruPerera/F2Adonis2/issues).
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to report a bug or propose a change.
+See [CONTRIBUTING.md](https://github.com/LakviruPerera/F2Adonis2/blob/master/CONTRIBUTING.md)
+for how to report a bug or propose a change.
 
 ## References
 
 Anderson, M.J., Walsh, D.C.I., Robert Clarke, K., Gorley, R.N. and
 Guerra-Castro, E. (2017), Some solutions to the multivariate
 Behrens–Fisher problem for dissimilarity-based analyses. Aust. N. Z. J.
-Stat., 59: 57-79. <https://doi.org/10.1111/anzs.12176>
+Stat., 59: 57-79. doi:10.1111/anzs.12176
 
 Oksanen J, Simpson G, Blanchet F, Kindt R, Legendre P, Minchin P, O’Hara
 R, Solymos P, Stevens M, Szoecs E, Wagner H, Barbour M, Bedward M,
 Bolker B, Borcard D, Borman T, Carvalho G, Chirico M, De Caceres M,
 Durand S, Evangelista H, FitzJohn R, Friendly M, Furneaux B, Hannigan G,
 Hill M, Lahti L, Martino C, McGlinn D, Ouellette M, Ribeiro Cunha E,
-Smith T, Stier A, Ter Braak C, Weedon J (2026). vegan: Community Ecology
-Package. R package version 2.8-0, <https://vegandevs.github.io/vegan/>.
+Smith T, Stier A, Ter Braak C, Weedon J (2026). *vegan: Community Ecology
+Package*. doi:10.32614/CRAN.package.vegan, R package version 2.7-3,
+<https://CRAN.R-project.org/package=vegan>

@@ -8,15 +8,20 @@ Authors@R: c(
     person("Mark", "Greenwood", role = "aut",
            comment = c(ORCID = "0000-0001-6933-1201"))
     )
-Description: Implements the F2 statistic and bias-adjusted 
-    bootstrap for dissimilarity-based multivariate analysis of variance. 
-    Based on the solutions for the multivariate Behrens-Fisher problem 
-    proposed by Anderson et al. (2017) <doi:10.1111/anzs.12176>.
+Language: en-US
+Description: Implements the F2 statistic of Anderson et al. (2017)
+    <doi:10.1111/anzs.12176> for permutational multivariate analysis of
+    variance (PERMANOVA) on dissimilarity matrices. The F2 statistic uses
+    group-specific dispersion estimates, so group centroids can be compared
+    when dispersions differ and group sizes are unequal. P-values are
+    obtained by permutation, bootstrap, or bias-adjusted
+    bootstrap. The formula interface follows 'adonis2()' in the 'vegan'
+    package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: 
     stats,
-    vegan
+    vegan (>= 2.7-3)
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.1.0)
