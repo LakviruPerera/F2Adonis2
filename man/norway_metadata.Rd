@@ -11,7 +11,9 @@ A data frame with 101 rows and 1 column:
 }
 }
 \source{
-\doi{10.1111/anzs.12176}
+Ellingsen, K.E. and Gray, J.S. (2002), \emph{Journal of Animal
+  Ecology}, 71(3), 373-389, \doi{10.1046/j.1365-2656.2002.00606.x}. Data as
+  provided with Anderson et al. (2017), \doi{10.1111/anzs.12176} (Data S1).
 }
 \usage{
 norway_metadata

@@ -8,7 +8,9 @@
 A matrix with 95 rows (samples) and 1554 columns (metabolites).
 }
 \source{
-Derived from the urinary metabolomics cohort in Houske et al. (2023).
+Derived from the urinary metabolomics cohort in Houske et al. (2023),
+  \emph{American Journal of Physiology-Renal Physiology}, 324(6), F590-F602,
+  \doi{10.1152/ajprenal.00301.2022}.
 }
 \usage{
 pkd_metabolites

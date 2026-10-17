@@ -7,7 +7,9 @@
 #' \describe{
 #'   \item{Group}{A factor indicating disease classification status (Ctrl vs PKD).}
 #' }
-#' @source Derived from the urinary metabolomics cohort in Houske et al. (2023).
+#' @source Derived from the urinary metabolomics cohort in Houske et al. (2023),
+#'   \emph{American Journal of Physiology-Renal Physiology}, 324(6), F590-F602,
+#'   \doi{10.1152/ajprenal.00301.2022}.
 #' @keywords datasets
 "pkd_metadata"
 
@@ -17,7 +19,9 @@
 #' early-stage Polycystic Kidney Disease patients and healthy controls.
 #'
 #' @format A matrix with 95 rows (samples) and 1554 columns (metabolites).
-#' @source Derived from the urinary metabolomics cohort in Houske et al. (2023).
+#' @source Derived from the urinary metabolomics cohort in Houske et al. (2023),
+#'   \emph{American Journal of Physiology-Renal Physiology}, 324(6), F590-F602,
+#'   \doi{10.1152/ajprenal.00301.2022}.
 #' @keywords datasets
 "pkd_metabolites"
 
@@ -27,7 +31,9 @@
 #' utilized as a baseline biological validation dataset.
 #'
 #' @format A matrix with 101 rows (sites) and 809 columns (species).
-#' @source \doi{10.1111/anzs.12176}
+#' @source Ellingsen, K.E. and Gray, J.S. (2002), \emph{Journal of Animal
+#'   Ecology}, 71(3), 373-389, \doi{10.1046/j.1365-2656.2002.00606.x}. Data as
+#'   provided with Anderson et al. (2017), \doi{10.1111/anzs.12176} (Data S1).
 #' @keywords datasets
 "norway_pa"
 
@@ -40,6 +46,8 @@
 #' \describe{
 #'   \item{Area}{A grouping factor with 5 levels indicating the specific geographical region.}
 #' }
-#' @source \doi{10.1111/anzs.12176}
+#' @source Ellingsen, K.E. and Gray, J.S. (2002), \emph{Journal of Animal
+#'   Ecology}, 71(3), 373-389, \doi{10.1046/j.1365-2656.2002.00606.x}. Data as
+#'   provided with Anderson et al. (2017), \doi{10.1111/anzs.12176} (Data S1).
 #' @keywords datasets
 "norway_metadata"
