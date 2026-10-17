@@ -1,6 +1,6 @@
 Package: F2Adonis2
 Title: PERMANOVA using the F2 Statistic
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Lakviru", "Perera", email = "korathotagelaperera@montana.edu",
            role = c("aut", "cre"),

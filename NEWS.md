@@ -1,8 +1,9 @@
-# F2Adonis2 (development version)
+# F2Adonis2 0.1.1
 
 * Added `NEWS.md`, `CONTRIBUTING.md`, and a support section in the README.
 * Added a GitHub Actions workflow that runs `R CMD check` on Linux, macOS, and Windows.
 * Added tests for the F2 calculation, input validation, and the bootstrap options.
+* Removed the `benchmark_f2()` timing helper from the package.
 
 # F2Adonis2 0.1.0
 
