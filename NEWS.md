@@ -4,6 +4,7 @@
 * Added a GitHub Actions workflow that runs `R CMD check` on Linux, macOS, and Windows.
 * Added tests for the F2 calculation, input validation, and the bootstrap options.
 * Removed the `benchmark_f2()` timing helper from the package.
+* Changed the license from MIT to GPL-2, because parts of the code are adapted from vegan.
 
 # F2Adonis2 0.1.0
 

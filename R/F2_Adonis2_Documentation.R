@@ -1,3 +1,13 @@
+## Copyright (C) 2026 Lakviru Perera
+##
+## Parts of F2_adonis2() and F2_adonis0() are adapted from vegan::adonis2()
+## and vegan:::adonis0(), distributed under GPL-2. These parts were modified
+## by Lakviru Perera, 2026.
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License version 2 as published
+## by the Free Software Foundation.
+
 #' Permutational Multivariate Analysis of Variance Using the F2 Statistic
 #'
 #' Analysis of variance using distance matrices for partitioning variation

@@ -3,7 +3,7 @@ Title: PERMANOVA using the F2 Statistic
 Version: 0.1.1
 Authors@R: c(
     person("Lakviru", "Perera", email = "korathotagelaperera@montana.edu",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0003-7717-3532")),
     person("Mark", "Greenwood", role = "aut",
            comment = c(ORCID = "0000-0001-6933-1201"))
@@ -17,7 +17,7 @@ Description: Implements the F2 statistic of Anderson et al. (2017)
     obtained by permutation, bootstrap, or bias-adjusted
     bootstrap. The formula interface follows 'adonis2()' in the 'vegan'
     package.
-License: MIT + file LICENSE
+License: GPL-2
 Encoding: UTF-8
 Imports: 
     stats,
