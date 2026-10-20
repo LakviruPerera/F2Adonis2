@@ -30,11 +30,11 @@ library(F2Adonis2)
 ```
 
 
-#Summary#
+## Summary
 
 F2Adonis2 is an R package designed for reliable multivariate analysis of variance using distance matrices. It implements the $F_2$ statistic as proposed by Anderson et al. (2017) to provide a solution to the multivariate Behrens-Fisher problem (BFP). The BFP arises when researchers need to test the null hypothesis of equality of mean vectors (centroids) across two or more populations while their dispersion matrices (variances) differ.
 
-#Statement of Need#
+## Statement of Need
 
 In multivariate ecological and biological studies, researchers often rely on distance-based permutational methods like PERMANOVA (the $F_1$ statistic) to detect differences among groups. However, standard PERMANOVA is strictly valid only when group dispersions are homogeneous. As demonstrated in Anderson et al. (2017), the $F_1$ test is not reliable under heterogeneous dispersions in the space of the chosen dissimilarity measure, particularly for unbalanced designs:
 
@@ -42,148 +42,23 @@ Inflated Type I Error: When smaller groups have larger spreads, the $F_1$ test b
 
 Loss of Power: When larger groups have larger spreads, the $F_1$ test becomes too conservative.
 
-F2Adonis2 provides a mathematically grounded solution by modifying the PERMANOVA test statistic, ensuring valid inference even when groups exhibit heteroscedasticity in non-Euclidean space.
+F2Adonis2 provides a mathematically grounded solution by modifying the PERMANOVA test statistic, ensuring valid inference even when groups exhibit heteroskedasticity in non-Euclidean space.
 
-#Methodology: The $F_2$ Statistic#
+## Methodology: The $F_2$ Statistic
 
-The $F_2$ statistic addresses the BFP by replacing the pooled residual error term in the denominator with a weighted average of group-specific mean-squared dissimilarities ($V_i$):
+The $F_2$ statistic addresses the BFP by replacing the pooled residual error term in the denominator with a weighted sum of group-specific mean-squared dissimilarities ($V_i$):
 
-$$F_2 = \frac{SS_A / (g - 1)}{\sum_{i=1}^g (1 - n_i/N)V_i}$$
+$$F_2 = \frac{SS_A}{\sum_{i=1}^g (1 - n_i/N)V_i}$$
 
 Where $SS_A$ is the among-group sum of squares, $g$ is the number of groups, $n_i$ is the sample size of group $i$, $N$ is the total sample size, and $V_i$ is the group-specific variance calculated in dissimilarity space.
 
-Resampling Methods
+### Resampling Methods
 
-For metric distances, the package supports standard permutation. However, for non-metric or semi-metric distances (like Jaccard or Bray-Curtis), the package implements matrix-space residual bootstrapping. This procedure uses a residualized G matrix (Gower's centered matrix) to preserve group-specific dispersions while strictly maintaining the null hypothesis of equal centroids.
+By default, $p$-values are computed by permuting group labels and recalculating the group-specific dispersions $V_i$ for every permutation. The package also provides separate-sample residual bootstrapping (`bootstrap = TRUE`), which resamples residuals within each group in centered dissimilarity space so the groups share a common centroid, along with an empirical bias adjustment for the resulting bootstrap variances (`bias.adjust = TRUE`). Following Anderson et al. (2017), permutation is recommended for general applications, since it gave better Type I error control and equal or greater power than the bootstrap in their simulations.
 
-#Case Study: Norway Benthic Macrofauna#
+## Univariate Comparison
 
-To demonstrate the effectiveness of the $F_2$ statistic, we replicate the analysis of the Norway benthic macrofauna dataset (Ekofisk oil field). This dataset consists of presence-absence data for 809 species across 101 sites, categorized into 5 Areas with unbalanced sample sizes.
-
-1. Load Data and Libraries
-
-```{r}
-
-library(F2Adonis2)
-
-library(vegan)
-
-
-
-# Load package datasets
-
-data(norway_pa)
-
-data(norway_metadata)
-
-
-
-# Unbalanced design overview
-
-table(norway_metadata$Area)
-```
-
-2. Visualizing Dispersion Heterogeneity
-
-Before running the test, we can confirm the presence of the Behrens-Fisher problem by visualizing the unequal group spreads using vegan::betadisper.
-
-```{r}
-dist_jaccard <- vegdist(norway_pa, method = "jaccard")
-
-mod_disp <- betadisper(dist_jaccard, norway_metadata$Area)
-
-# Plotting dispersions
-plot(mod_disp, main = "Multivariate Dispersions (Norway Data)")
-
-
-library(yarrr)
-
-# Extract data into a frame for plotting
-disp_data <- data.frame(
-  Distance = mod_disp$distances,
-  Area = mod_disp$group
-)
-
-# Enhanced Pirate Plot
-pirateplot(formula = Distance ~ Area,
-           data = disp_data,
-           main = "Multivariate Dispersions (Norway Data)",
-           xlab = "Geographic Area",
-           ylab = "Distance to Centroid",
-           theme = 1,          # Clean theme
-           pal = "basel",      # Professional palette
-           point.o = 0.9,      # Transparency of raw points
-           avg.line.o = 0.8,   # High visibility for mean
-           bean.f.o = 0.2,     # Light density bean
-           inf.method = "hdi") # High-density interval for inference
-```
-
-
-3. Global F2 PERMANOVA
-
-We apply the F2_adonis2 function. We enable bootstrap = TRUE and bias.adjust = TRUE to account for the non-metric nature of the Jaccard distance and to correct for potential variance overestimation in small samples. `permutations = 99` is used here to reduce the running time; the accompanying JOSS paper reports results at `permutations = 999`.
-
-
-```{r}
-set.seed(123)
-
-# Conventional perMANOVA pseudo-F:
-
-fit_results1 <- adonis2(
-
-  formula = norway_pa ~ Area,
-
-  data = norway_metadata,
-
-  method = "jaccard",
-
-  permutations = 99
-
-)
-
-fit_results1
-
-
-# Running the F2 test
-
-fit_results2 <- F2_adonis2(
-
-  formula = norway_pa ~ Area,
-
-  data = norway_metadata,
-
-  method = "jaccard",
-
-  permutations = 99,
-
-  bootstrap = TRUE,
-
-  bias.adjust = TRUE,
-
-  plot.dist = FALSE
-
-)
-
-
-
-fit_results2
-```
-
-* Comparison of permutation distributions:
-
-
-```{r}
-# attributes(fit_results1)
-# 
-# attributes(fit_results1)$F.perm %>% as.data.frame() %>% ggplot(aes(x = V1)) + 
-#   geom_histogram() + 
-#   geom_vline(xintercept = fit_results1$F[1])
-```
-
-
-#Univariate Comparison#
-
-The test statistic provides a generalization of Welch's F-test. The following code compares the two results and the more conventional approaches in two situations, one with no difference in the means but different variances and one with different means and different variances.
+The test statistic provides a generalization of Welch's F-test. The following code compares Welch's F-test with the conventional ANOVA in a situation with no difference in the means but different variances.
 
 ```{r}
 ################################################################################
@@ -211,7 +86,7 @@ df1 %>% ggplot(aes(x = Xf, y = y1, fill = Xf)) +
   theme_minimal() +
   labs(title = "Simulation: Same Means, Heterogeneous Variance")
 
-# Standard ANOVA - significant (p=0.031) because it is biased by the variance
+# Standard ANOVA - Strong evidence (p=0.031) because it is biased by the variance
 anova(lm(y1 ~ Xf, data = df1))
 
 # ==============================================================================
@@ -286,10 +161,126 @@ ggplot(null_df, aes(x = Value, fill = Test)) +
        x = "Statistic Value", y = "Density")
 ```
 
+## Case Study 1: Norway Benthic Macrofauna
+
+To demonstrate the effectiveness of the $F_2$ statistic, we replicate the analysis of the Norway benthic macrofauna dataset (Ekofisk oil field) (Ellingsen and Gray 2002). This dataset consists of presence-absence data for 809 species across 101 sites, categorized into 5 Areas with unbalanced sample sizes.
+
+### Load Data and Libraries
+
+```{r}
+
+library(F2Adonis2)
+
+library(vegan)
+
+
+
+# Load package datasets
+
+data(norway_pa)
+
+data(norway_metadata)
+
+
+
+# Unbalanced design overview
+
+table(norway_metadata$Area)
+```
+
+### Visualizing Dispersion Heterogeneity
+
+Before running the test, we can confirm the presence of the Behrens-Fisher problem by visualizing the unequal group spreads using vegan::betadisper.
+
+```{r}
+dist_jaccard <- vegdist(norway_pa, method = "jaccard")
+
+mod_disp <- betadisper(dist_jaccard, norway_metadata$Area)
+
+# Plotting dispersions
+plot(mod_disp, main = "Multivariate Dispersions (Norway Data)")
+
+
+library(yarrr)
+
+# Extract data into a frame for plotting
+disp_data <- data.frame(
+  Distance = mod_disp$distances,
+  Area = mod_disp$group
+)
+
+# Enhanced Pirate Plot
+pirateplot(formula = Distance ~ Area,
+           data = disp_data,
+           main = "Multivariate Dispersions (Norway Data)",
+           xlab = "Geographic Area",
+           ylab = "Distance to Centroid",
+           theme = 1,          # Clean theme
+           pal = "basel",      # Professional palette
+           point.o = 0.9,      # Transparency of raw points
+           avg.line.o = 0.8,   # High visibility for mean
+           bean.f.o = 0.2,     # Light density bean
+           inf.method = "hdi") # High-density interval for inference
+```
+
+
+### Global F2 PERMANOVA
+
+We apply the F2_adonis2 function. Setting `bootstrap = TRUE` and `bias.adjust = TRUE` also reports the bootstrap and bias-adjusted bootstrap p-values alongside the permutation p-value. `permutations = 99` is used here to reduce the running time; the accompanying JOSS paper reports results at `permutations = 999`.
+
+
+```{r}
+set.seed(123)
+
+# Conventional perMANOVA pseudo-F:
+
+fit_results1 <- adonis2(
+
+  formula = norway_pa ~ Area,
+
+  data = norway_metadata,
+
+  method = "jaccard",
+
+  permutations = 99
+
+)
+
+fit_results1
+
+
+# Running the F2 test
+
+fit_results2 <- F2_adonis2(
+
+  formula = norway_pa ~ Area,
+
+  data = norway_metadata,
+
+  method = "jaccard",
+
+  permutations = 99,
+
+  bootstrap = TRUE,
+
+  bias.adjust = TRUE,
+
+  plot.dist = FALSE
+
+)
+
+
+
+fit_results2
+```
+
+## Case Study 2: PKD Metabolomics
+
+This example uses the urinary metabolomics matrix included in the package (95 samples, 1,554 metabolites), derived from the cohort in Houske et al. (2023).
 
 ```{r}
 # ==============================================================================
-# 5. High-Dimensional Case Study (PKD Metabolomics)
+# High-Dimensional Case Study (PKD Metabolomics)
 # ==============================================================================
 # Demonstrating scaling to 1,554 variables where Welch's F is unavailable.
 library(dplyr)
@@ -333,7 +324,7 @@ print(pkd_f2_results)
 ```
 
 
-#Implementation Details#
+## Implementation Details
 
 The F2_adonis2 function is designed to be a "drop-in" replacement for vegan::adonis2, supporting standard R formulas and distance calculations via vegdist. Key features include:
 
@@ -341,13 +332,16 @@ Internal Consistency: Implements the $V_i$ estimator directly from the distance 
 
 Flexible Bootstrapping: Offers both standard permutation and separate-sample residual bootstrapping.
 
-Bias Correction: Includes an empirical bias correction for bootstrap variances as derived in Anderson (2017).
+Bias Correction: Includes an empirical bias correction for bootstrap variances as derived in Anderson et al. (2017).
 
-#References#
+## References
 
-Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017). Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based analyses. Australian & New Zealand Journal of Statistics, 59(1), 57-79. \doi{10.1111/anzs.12176}
+Anderson, M. J., Walsh, D. C., Clarke, K. R., Gorley, R. N., & Guerra-Castro, E. (2017). Some solutions to the multivariate Behrens–Fisher problem for dissimilarity-based analyses. *Australian & New Zealand Journal of Statistics*, 59(1), 57-79. doi:10.1111/anzs.12176
 
-Dag, O., Dolgun, A., Konar, N.M. (2018). onewaytests: An R Package for One-Way Tests in Independent Groups Designs. The R Journal, 10:1, 175-199.
+Dag, O., Dolgun, A., Konar, N. M. (2018). onewaytests: An R Package for One-Way Tests in Independent Groups Designs. *The R Journal*, 10(1), 175-199.
 
-Welch, B. L.(1951). On the Comparison of Several Mean Values: An Alternative Approach. Biometrika, 38, 330-336.
+Ellingsen, K. E., & Gray, J. S. (2002). Spatial patterns of benthic diversity: is there a latitudinal gradient along the Norwegian continental shelf? *Journal of Animal Ecology*, 71(3), 373-389. doi:10.1046/j.1365-2656.2002.00606.x
 
+Houske, E. A., Glimm, M. G., Bergstrom, A. R., Slipher, S. K., Welhaven, H. D., Greenwood, M. C., Linse, G. M., June, R. K., Yu, A. S. L., Wallace, D. P., & Hahn, A. K. (2023). Metabolomic profiling to identify early urinary biomarkers and metabolic pathway alterations in autosomal dominant polycystic kidney disease. *American Journal of Physiology-Renal Physiology*, 324(6), F590-F602. doi:10.1152/ajprenal.00301.2022
+
+Welch, B. L. (1951). On the Comparison of Several Mean Values: An Alternative Approach. *Biometrika*, 38, 330-336.
