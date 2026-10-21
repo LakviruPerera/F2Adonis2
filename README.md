@@ -64,6 +64,9 @@ fit_f2 <- F2_adonis2(
 # View results
 print(fit_f2)
 ```
+## Testing
+
+The package is checked with `R CMD check` on Linux, macOS, and Windows through GitHub Actions (see the badge above). It was also checked independently on Windows 11 (R 4.6.1) and Ubuntu 26.04 LTS (R 4.6.0) during development.
 
 ## Support and contributing
 
@@ -71,6 +74,10 @@ Questions and bug reports are welcome on the
 [issue tracker](https://github.com/LakviruPerera/F2Adonis2/issues).
 See [CONTRIBUTING.md](https://github.com/LakviruPerera/F2Adonis2/blob/master/CONTRIBUTING.md)
 for how to report a bug or propose a change.
+
+## License
+
+GPL-2. Parts of the code are adapted from the 'vegan' package, which is also licensed under GPL-2.
 
 ## References
 

@@ -5,6 +5,7 @@
 * Added tests for the F2 calculation, input validation, and the bootstrap options.
 * Removed the `benchmark_f2()` timing helper from the package.
 * Changed the license from MIT to GPL-2, because parts of the code are adapted from vegan.
+* During development, the package was checked independently on Windows 11 (R 4.6.1) and Ubuntu 26.04 LTS (R 4.6.0), and passed.
 
 # F2Adonis2 0.1.0
 
