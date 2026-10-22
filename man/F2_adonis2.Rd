@@ -54,6 +54,15 @@ dissimilarity space (Anderson 2017).}
 
 \item{...}{Other arguments passed to \code{vegdist}.}
 }
+\value{
+An object of classes \code{F2_adonis2}, \code{anova.cca},
+  \code{anova} and \code{data.frame}: an ANOVA-style table with rows
+  \code{Model}, \code{Residual} and \code{Total}, and columns \code{Df},
+  \code{SumOfSqs}, \code{F2} and \code{Pr(>F2)}. If \code{bootstrap = TRUE},
+  the column \code{Pr(>F2.boot)} is added, and if \code{bias.adjust = TRUE},
+  \code{Pr(>F2.ba)} as well. The permutation values of the F2 statistic are
+  stored in the attribute \code{F.perm}.
+}
 \description{
 Analysis of variance using distance matrices for partitioning variation
 among sources. Unlike standard PERMANOVA, this function uses the F2 statistic

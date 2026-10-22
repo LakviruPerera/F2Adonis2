@@ -48,6 +48,14 @@
 #'
 #' @author Lakviru Perera (based on logic by Marti J. Anderson)
 #'
+#' @return An object of classes \code{F2_adonis2}, \code{anova.cca},
+#'   \code{anova} and \code{data.frame}: an ANOVA-style table with rows
+#'   \code{Model}, \code{Residual} and \code{Total}, and columns \code{Df},
+#'   \code{SumOfSqs}, \code{F2} and \code{Pr(>F2)}. If \code{bootstrap = TRUE},
+#'   the column \code{Pr(>F2.boot)} is added, and if \code{bias.adjust = TRUE},
+#'   \code{Pr(>F2.ba)} as well. The permutation values of the F2 statistic are
+#'   stored in the attribute \code{F.perm}.
+#'
 #' @examples
 #' # Load internal package data objects
 #' data("pkd_metadata", package = "F2Adonis2")
