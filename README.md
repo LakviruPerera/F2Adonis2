@@ -8,7 +8,7 @@ F2Adonis2 is a tool for multivariate hypothesis testing, developed to
 support clinical metabolomics and high-dimensional omics research. It
 addresses the multivariate Behrens-Fisher Problem in dissimilarity-based
 analyses (such as PERMANOVA), providing a statistically sound approach
-for datasets where group dispersions are heterogeneous. It is available on GitHub.
+for datasets where group dispersions are heterogeneous. It is available on CRAN and GitHub.
 
 ## Motivation
 
@@ -25,15 +25,16 @@ heteroskedastic conditions.
 
 ## Installation
 
-You must install the `remotes` package first.
+Install the released version from CRAN:
 
 ``` r
-install.packages("remotes")
+install.packages("F2Adonis2")
 ```
 
-Then, use `install_github` to install this package.
+Or install the development version from GitHub:
 
 ``` r
+# install.packages("remotes")
 remotes::install_github("LakviruPerera/F2Adonis2")
 ```
 
