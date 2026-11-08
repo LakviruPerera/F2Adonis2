@@ -1,3 +1,7 @@
+# F2Adonis2 (development version)
+
+* Added a regression test reproducing the published Norway Areas 2 vs 3 results (F1 = 6.53, F2 = 6.84).
+
 # F2Adonis2 0.1.1
 
 * Added `NEWS.md`, `CONTRIBUTING.md`, and a support section in the README.

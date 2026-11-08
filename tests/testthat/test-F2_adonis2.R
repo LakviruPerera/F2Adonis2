@@ -83,3 +83,23 @@ test_that("the same seed gives the same p-value", {
                    plot.dist = FALSE)["Model", "Pr(>F2)"]
   expect_equal(p1, p2)
 })
+
+test_that("Norway Areas 2 vs 3 reproduces the published F1 and F2", {
+  data("norway_pa", package = "F2Adonis2", envir = environment())
+  data("norway_metadata", package = "F2Adonis2", envir = environment())
+  keep <- norway_metadata$Area %in% levels(norway_metadata$Area)[2:3]
+  meta <- droplevels(norway_metadata[keep, , drop = FALSE])
+  sub_pa <- norway_pa[keep, ]
+
+  fit <- F2_adonis2(sub_pa ~ Area, data = meta, method = "jaccard",
+                    permutations = 19, plot.dist = FALSE)
+  expect_equal(fit["Model", "F2"], 6.838793, tolerance = 1e-4)
+  expect_equal(fit["Model", "Df"], 1)
+  expect_equal(fit["Residual", "Df"], 44)
+  expect_equal(fit["Model", "SumOfSqs"], 1.7613, tolerance = 1e-4)
+  expect_equal(fit["Residual", "SumOfSqs"], 11.8717, tolerance = 1e-4)
+
+  ref <- vegan::adonis2(sub_pa ~ Area, data = meta, method = "jaccard",
+                        permutations = 19)
+  expect_equal(ref["Model", "F"], 6.527747, tolerance = 1e-4)
+})
