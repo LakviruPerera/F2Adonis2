@@ -81,6 +81,29 @@ for how to report a bug or propose a change.
 
 GPL-2. Parts of the code are adapted from the 'vegan' package, which is also licensed under GPL-2.
 
+## Citation
+
+To cite F2Adonis2, please use `citation("F2Adonis2")` in R, which gives:
+
+```
+Perera L, Greenwood M (2026). _F2Adonis2: PERMANOVA using the F2 Statistic_.
+doi:10.32614/CRAN.package.F2Adonis2 <https://doi.org/10.32614/CRAN.package.F2Adonis2>,
+R package version 0.1.1, <https://CRAN.R-project.org/package=F2Adonis2>.
+```
+
+A BibTeX entry for LaTeX users is:
+
+```bibtex
+@Manual{Perera2026F2Adonis2,
+  title = {F2Adonis2: PERMANOVA using the F2 Statistic},
+  author = {Lakviru Perera and Mark Greenwood},
+  year = {2026},
+  note = {R package version 0.1.1},
+  url = {https://CRAN.R-project.org/package=F2Adonis2},
+  doi = {10.32614/CRAN.package.F2Adonis2},
+}
+```
+
 ## References
 
 Anderson, M.J., Walsh, D.C.I., Robert Clarke, K., Gorley, R.N. and
