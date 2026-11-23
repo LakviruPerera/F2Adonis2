@@ -103,3 +103,11 @@ test_that("Norway Areas 2 vs 3 reproduces the published F1 and F2", {
                         permutations = 19)
   expect_equal(ref["Model", "F"], 6.527747, tolerance = 1e-4)
 })
+
+test_that("nobs returns the number of observations", {
+  data("norway_pa", package = "F2Adonis2", envir = environment())
+  data("norway_metadata", package = "F2Adonis2", envir = environment())
+  fit <- F2_adonis2(norway_pa ~ Area, data = norway_metadata,
+                    method = "jaccard", permutations = 19, plot.dist = FALSE)
+  expect_equal(nobs(fit), nrow(norway_metadata))
+})

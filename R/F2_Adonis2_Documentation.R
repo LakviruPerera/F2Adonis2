@@ -305,4 +305,4 @@ calculate_F2_and_Vi <- function(dmat_sq, grp_ID, SS.A, n) {
 
 #' @importFrom stats nobs
 #' @export
-nobs.F2_adonis2 <- function(object, ...) nrow(object$dmat_squared)
+nobs.F2_adonis2 <- function(object, ...) object["Total", "Df"] + 1

@@ -1,6 +1,7 @@
 # F2Adonis2 (development version)
 
 * Added a regression test for the published two-group Norway comparison (Areas 2 vs. 3) from Anderson et al. (2017).
+* Added a `nobs()` method for `F2_adonis2` objects (the earlier method returned `NULL`).
 
 # F2Adonis2 0.1.1
 
